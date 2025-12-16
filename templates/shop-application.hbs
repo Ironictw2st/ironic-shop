@@ -1,0 +1,680 @@
+<div class="ironic-shop-container">
+    <style>
+        .ironic-shop-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background: var(--color-bg, #1a1a1a);
+            color: var(--color-text, #f0f0f0);
+            font-family: var(--font-primary, "Signika", sans-serif);
+        }
+
+        /* Header Row - Currency Displays */
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .currency-display {
+            padding: 8px 12px;
+            border: 2px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-dark, #0d0d0d);
+        }
+
+        .currency-display .label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted, #999);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .currency-values {
+            display: flex;
+            gap: 8px;
+        }
+
+        .currency {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .currency i {
+            font-size: 0.75rem;
+        }
+
+        .currency.pp {
+            color: #e5e4e2;
+            background: rgba(229, 228, 226, 0.15);
+        }
+
+        .currency.gp {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        .currency.ep {
+            color: #90D5FF;
+            background: rgba(192, 192, 192, 0.15);
+        }
+
+        .currency.sp {
+            color: #c0c0c0;
+            background: rgba(192, 192, 192, 0.1);
+        }
+
+        .currency.cp {
+            color: #b87333;
+            background: rgba(184, 115, 51, 0.15);
+        }
+
+        .gold-display {
+            padding: 8px 16px;
+            border: 2px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-dark, #0d0d0d);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .gold-display .label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted, #999);
+            text-transform: uppercase;
+        }
+
+        .gold-display .value {
+            font-size: 1.1rem;
+            color: gold;
+            font-weight: bold;
+        }
+
+        /* Main Content Area */
+        .shop-main {
+            display: flex;
+            flex: 1;
+            gap: 10px;
+            min-height: 0;
+        }
+
+        /* Inventory Panels (Left and Right) */
+        .inventory-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-dark, #0d0d0d);
+        }
+
+        .inventory-panel .panel-header {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-lighter, #2a2a2a);
+            font-weight: bold;
+        }
+
+        .inventory-controls {
+            display: flex;
+            gap: 5px;
+            padding: 5px;
+            border-bottom: 1px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-lighter, #2a2a2a);
+        }
+
+        .search-input {
+            flex: 3;
+            padding: 4px 8px;
+            border: 1px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg, #1a1a1a);
+            color: var(--color-text, #f0f0f0);
+            font-size: 0.8rem;
+            min-width: 0;
+        }
+
+        .search-input::placeholder {
+            color: var(--color-text-muted, #999);
+        }
+
+        .sort-select {
+            flex: 1;
+            max-width: 70px;
+            padding: 4px 2px;
+            border: 1px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg, #1a1a1a);
+            color: var(--color-text, #f0f0f0);
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .inventory-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .inventory-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            background: var(--color-bg-lighter, #2a2a2a);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .inventory-item:hover {
+            border-color: var(--color-highlight, #7a7a7a);
+            background: var(--color-bg-hover, #3a3a3a);
+        }
+
+        .inventory-item.selected {
+            border-color: var(--color-accent, #ff6600);
+            background: var(--color-bg-selected, #4a3a2a);
+        }
+
+        .inventory-item.in-trade {
+            opacity: 0.5;
+            border-color: var(--color-accent, #ff6600);
+            background: var(--color-bg-selected, #4a3a2a);
+        }
+
+        .inventory-item .item-img {
+            width: 32px;
+            height: 32px;
+            margin-right: 8px;
+            border: 1px solid var(--color-border, #4a4a4a);
+        }
+
+        .inventory-item .item-name {
+            flex: 1;
+        }
+
+        .inventory-item .item-price {
+            color: gold;
+            font-size: 0.85rem;
+        }
+
+        .inventory-item .item-qty {
+            margin-left: 8px;
+            color: var(--color-text-muted, #999);
+            font-size: 0.85rem;
+        }
+
+        /* Center Trade Panel */
+        .trade-panel {
+            width: 160px;
+            min-width: 160px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* Trade Item Lists */
+        .trade-list-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-dark, #0d0d0d);
+            max-height: 120px;
+        }
+
+        .trade-list-container .panel-header {
+            padding: 4px;
+            text-align: center;
+            border-bottom: 1px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-lighter, #2a2a2a);
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .trade-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 3px;
+            min-height: 40px;
+        }
+
+        .trade-item {
+            display: flex;
+            align-items: center;
+            padding: 2px 4px;
+            margin-bottom: 2px;
+            background: var(--color-bg-lighter, #2a2a2a);
+            font-size: 0.75rem;
+        }
+
+        .trade-item .item-img {
+            width: 20px;
+            height: 20px;
+            margin-right: 4px;
+            flex-shrink: 0;
+        }
+
+        .trade-item .item-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .trade-item .item-qty {
+            margin: 0 4px;
+            color: var(--color-text-muted, #999);
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        .trade-item .remove-btn {
+            width: 16px;
+            height: 16px;
+            border: none;
+            background: var(--color-danger, #aa3333);
+            color: white;
+            cursor: pointer;
+            font-size: 0.6rem;
+            line-height: 1;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .trade-item .remove-btn:hover {
+            background: var(--color-danger-hover, #cc4444);
+        }
+
+        /* Currency Input Fields */
+        .currency-input-container {
+            border: 2px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-dark, #0d0d0d);
+            padding: 6px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .currency-input-container label {
+            display: block;
+            font-size: 0.7rem;
+            margin-bottom: 4px;
+            color: var(--color-text-muted, #999);
+        }
+
+        .currency-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+        }
+
+        .currency-input {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex: 1 1 45%;
+            min-width: 70px;
+        }
+
+        .currency-input .currency-label {
+            width: 20px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .currency-input input {
+            flex: 1;
+            padding: 2px 4px;
+            border: 1px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg, #1a1a1a);
+            font-size: 0.75rem;
+            text-align: center;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .currency-input.pp .currency-label { color: #e5e4e2; }
+        .currency-input.pp input { color: #e5e4e2; }
+
+        .currency-input.gp .currency-label { color: #ffd700; }
+        .currency-input.gp input { color: #ffd700; }
+
+        .currency-input.ep .currency-label { color: #90D5FF; }
+        .currency-input.ep input { color: #90D5FF; }
+
+        .currency-input.sp .currency-label { color: #a8a8a8; }
+        .currency-input.sp input { color: #a8a8a8; }
+
+        .currency-input.cp .currency-label { color: #b87333; }
+        .currency-input.cp input { color: #b87333; }
+
+        .item-price.pp { color: #e5e4e2; }   /* Platinum */
+        .item-price.gp { color: #ffd700; }   /* Gold */
+        .item-price.ep { color: #90D5FF; }   /* Electrum */
+        .item-price.sp { color: #a8a8a8; }   /* Silver */
+        .item-price.cp { color: #b87333; }   /* Copper */
+
+
+        /* Scrollbar for currency inputs */
+        .currency-input-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .currency-input-container::-webkit-scrollbar-track {
+            background: var(--color-bg-dark, #0d0d0d);
+        }
+
+        .currency-input-container::-webkit-scrollbar-thumb {
+            background: var(--color-border, #4a4a4a);
+            border-radius: 3px;
+        }
+
+        .gold-input-container {
+            border: 2px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-dark, #0d0d0d);
+            padding: 8px;
+        }
+
+        .gold-input-container label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+            color: var(--color-text-muted, #999);
+        }
+
+        .gold-input-container input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg, #1a1a1a);
+            color: gold;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        /* Trade Balance Display */
+        .trade-balance {
+            padding: 4px;
+            border: 2px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-dark, #0d0d0d);
+            text-align: center;
+        }
+
+        .trade-balance .label {
+            font-size: 0.65rem;
+            color: var(--color-text-muted, #999);
+        }
+
+        .trade-balance .value {
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .trade-balance .value.positive {
+            color: var(--color-success, #44aa44);
+        }
+
+        .trade-balance .value.negative {
+            color: var(--color-danger, #aa3333);
+        }
+
+        .trade-balance .value.neutral {
+            color: gold;
+        }
+
+        /* Footer - Action Buttons */
+        .shop-footer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+
+        .shop-btn {
+            padding: 12px 40px;
+            border: 2px solid var(--color-border, #4a4a4a);
+            background: var(--color-bg-dark, #0d0d0d);
+            color: var(--color-text, #f0f0f0);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .shop-btn:hover {
+            background: var(--color-bg-lighter, #2a2a2a);
+            border-color: var(--color-highlight, #7a7a7a);
+        }
+
+        .shop-btn.confirm {
+            border-color: var(--color-success, #44aa44);
+        }
+
+        .shop-btn.confirm:hover {
+            background: var(--color-success-dark, #2a6a2a);
+        }
+
+        .shop-btn.confirm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .shop-btn.cancel:hover {
+            background: var(--color-danger-dark, #4a2a2a);
+            border-color: var(--color-danger, #aa3333);
+        }
+
+        /* Scrollbar Styling */
+        .inventory-list::-webkit-scrollbar,
+        .trade-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .inventory-list::-webkit-scrollbar-track,
+        .trade-list::-webkit-scrollbar-track {
+            background: var(--color-bg-dark, #0d0d0d);
+        }
+
+        .inventory-list::-webkit-scrollbar-thumb,
+        .trade-list::-webkit-scrollbar-thumb {
+            background: var(--color-border, #4a4a4a);
+            border-radius: 4px;
+        }
+
+        .inventory-list::-webkit-scrollbar-thumb:hover,
+        .trade-list::-webkit-scrollbar-thumb:hover {
+            background: var(--color-highlight, #7a7a7a);
+        }
+    </style>
+
+    {{!-- Header: Currency Displays --}}
+    <div class="shop-header">
+        <div class="currency-display shop-currency">
+            <div class="label">Shop Currency</div>
+            <div class="currency-values">
+                <span class="currency pp" title="Platinum"><i class="fas fa-coins"></i> {{shopCurrency.pp}}</span>
+                <span class="currency gp" title="Gold"><i class="fas fa-coins"></i> {{shopCurrency.gp}}</span>
+                <span class="currency ep" title="Electrum"><i class="fas fa-coins"></i> {{shopCurrency.ep}}</span>
+                <span class="currency sp" title="Silver"><i class="fas fa-coins"></i> {{shopCurrency.sp}}</span>
+                <span class="currency cp" title="Copper"><i class="fas fa-coins"></i> {{shopCurrency.cp}}</span>
+            </div>
+        </div>
+        <div class="currency-display player-currency">
+            <div class="label">Player Currency</div>
+            <div class="currency-values">
+                <span class="currency pp" title="Platinum"><i class="fas fa-coins"></i> {{playerCurrency.pp}}</span>
+                <span class="currency gp" title="Gold"><i class="fas fa-coins"></i> {{playerCurrency.gp}}</span>
+                <span class="currency ep" title="Electrum"><i class="fas fa-coins"></i> {{playerCurrency.ep}}</span>
+                <span class="currency sp" title="Silver"><i class="fas fa-coins"></i> {{playerCurrency.sp}}</span>
+                <span class="currency cp" title="Copper"><i class="fas fa-coins"></i> {{playerCurrency.cp}}</span>
+            </div>
+        </div>
+    </div>
+
+    {{!-- Main Content: Three Column Layout --}}
+    <div class="shop-main">
+        {{!-- Left: Shop Inventory --}}
+        <div class="inventory-panel shop-inventory">
+            <div class="panel-header">Shop Inventory</div>
+            <div class="inventory-controls">
+                <input type="text" name="shopSearch" placeholder="Search..." value="{{shopSearch}}" class="search-input">
+                <select name="shopSort" class="sort-select">
+                    <option value="name" {{#if (eq shopSort "name")}}selected{{/if}}>Name</option>
+                    <option value="price" {{#if (eq shopSort "price")}}selected{{/if}}>Price ↓</option>
+                    <option value="price-asc" {{#if (eq shopSort "price-asc")}}selected{{/if}}>Price ↑</option>
+                    <option value="quantity" {{#if (eq shopSort "quantity")}}selected{{/if}}>Qty</option>
+                </select>
+            </div>
+            <div class="inventory-list" data-type="shop">
+                {{#each shopInventory}}
+                <div class="inventory-item {{#if this.inTrade}}in-trade{{/if}}" data-item-id="{{this.id}}" data-source="shop">
+                    <img class="item-img" src="{{this.img}}" alt="{{this.name}}">
+                    <span class="item-name">{{this.name}}</span>
+                    <span class="item-price {{this.denom}}">{{this.priceLabel}}</span>
+                    {{#if this.quantity}}
+                    <span class="item-qty">x{{this.quantity}}</span>
+                    {{/if}}
+                </div>
+                {{else}}
+                <div class="empty-message">No items available</div>
+                {{/each}}
+            </div>
+        </div>
+
+        {{!-- Center: Trade Panel --}}
+        <div class="trade-panel">
+            {{!-- Player's Trade Items (what player is offering) --}}
+            <div class="trade-list-container player-trade-items">
+                <div class="panel-header">Player Trade Items</div>
+                <div class="trade-list" data-trade="player-items">
+                    {{#each playerTradeItems}}
+                    <div class="trade-item" data-item-id="{{this.id}}">
+                        <img class="item-img" src="{{this.img}}" alt="{{this.name}}">
+                        <span class="item-name">{{this.name}}</span>
+                        <span class="item-qty">x{{this.quantity}}</span>
+                        <button type="button" class="remove-btn" data-action="remove-player-item" data-item-id="{{this.id}}">✕</button>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            {{!-- Currency Inputs --}}
+            <div class="currency-input-container player-currency-input">
+                <label>Player Trade Currency</label>
+                <div class="currency-inputs">
+                    <div class="currency-input pp">
+                        <span class="currency-label">PP</span>
+                        <input type="number" name="playerTradePP" value="{{playerTradeCurrency.pp}}" min="0" max="{{playerCurrency.pp}}" placeholder="0">
+                    </div>
+                    <div class="currency-input gp">
+                        <span class="currency-label">GP</span>
+                        <input type="number" name="playerTradeGP" value="{{playerTradeCurrency.gp}}" min="0" max="{{playerCurrency.gp}}" placeholder="0">
+                    </div>
+                    <div class="currency-input ep">
+                        <span class="currency-label">EP</span>
+                        <input type="number" name="playerTradeEP" value="{{playerTradeCurrency.ep}}" min="0" max="{{playerCurrency.ep}}" placeholder="0">
+                    </div>
+                    <div class="currency-input sp">
+                        <span class="currency-label">SP</span>
+                        <input type="number" name="playerTradeSP" value="{{playerTradeCurrency.sp}}" min="0" max="{{playerCurrency.sp}}" placeholder="0">
+                    </div>
+                    <div class="currency-input cp">
+                        <span class="currency-label">CP</span>
+                        <input type="number" name="playerTradeCP" value="{{playerTradeCurrency.cp}}" min="0" max="{{playerCurrency.cp}}" placeholder="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="currency-input-container shop-currency-input">
+                <label>Shop Trade Currency</label>
+                <div class="currency-inputs">
+                    <div class="currency-input pp">
+                        <span class="currency-label">PP</span>
+                        <input type="number" name="shopTradePP" value="{{shopTradeCurrency.pp}}" min="0" max="{{shopCurrency.pp}}" placeholder="0">
+                    </div>
+                    <div class="currency-input gp">
+                        <span class="currency-label">GP</span>
+                        <input type="number" name="shopTradeGP" value="{{shopTradeCurrency.gp}}" min="0" max="{{shopCurrency.gp}}" placeholder="0">
+                    </div>
+                    <div class="currency-input ep">
+                        <span class="currency-label">EP</span>
+                        <input type="number" name="shopTradeEP" value="{{shopTradeCurrency.ep}}" min="0" max="{{shopCurrency.ep}}" placeholder="0">
+                    </div>
+                    <div class="currency-input sp">
+                        <span class="currency-label">SP</span>
+                        <input type="number" name="shopTradeSP" value="{{shopTradeCurrency.sp}}" min="0" max="{{shopCurrency.sp}}" placeholder="0">
+                    </div>
+                    <div class="currency-input cp">
+                        <span class="currency-label">CP</span>
+                        <input type="number" name="shopTradeCP" value="{{shopTradeCurrency.cp}}" min="0" max="{{shopCurrency.cp}}" placeholder="0">
+                    </div>
+                </div>
+            </div>
+
+            {{!-- Shop's Trade Items (what shop is offering) --}}
+            <div class="trade-list-container shop-trade-items">
+                <div class="panel-header">Shop Trade Items</div>
+                <div class="trade-list" data-trade="shop-items">
+                    {{#each shopTradeItems}}
+                    <div class="trade-item" data-item-id="{{this.id}}">
+                        <img class="item-img" src="{{this.img}}" alt="{{this.name}}">
+                        <span class="item-name">{{this.name}}</span>
+                        <span class="item-qty">x{{this.quantity}}</span>
+                        <button type="button" class="remove-btn" data-action="remove-shop-item" data-item-id="{{this.id}}">✕</button>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            {{!-- Trade Balance Indicator --}}
+            <div class="trade-balance">
+                <div class="label">Trade Balance</div>
+                <div class="value {{tradeBalanceClass}}">{{tradeBalance}} GP</div>
+            </div>
+        </div>
+
+        {{!-- Right: Player Inventory --}}
+        <div class="inventory-panel player-inventory">
+            <div class="panel-header">Player Inventory</div>
+            <div class="inventory-controls">
+                <input type="text" name="playerSearch" placeholder="Search..." value="{{playerSearch}}" class="search-input">
+                <select name="playerSort" class="sort-select">
+                    <option value="name" {{#if (eq playerSort "name")}}selected{{/if}}>Name</option>
+                    <option value="price" {{#if (eq playerSort "price")}}selected{{/if}}>Price ↓</option>
+                    <option value="price-asc" {{#if (eq playerSort "price-asc")}}selected{{/if}}>Price ↑</option>
+                    <option value="quantity" {{#if (eq playerSort "quantity")}}selected{{/if}}>Qty</option>
+                </select>
+            </div>
+            <div class="inventory-list" data-type="player">
+                {{#each playerInventory}}
+                <div class="inventory-item {{#if this.inTrade}}in-trade{{/if}}" data-item-id="{{this.id}}" data-source="player">
+                    <img class="item-img" src="{{this.img}}" alt="{{this.name}}">
+                    <span class="item-name">{{this.name}}</span>
+                    <span class="item-price {{this.denom}}">{{this.priceLabel}}</span>
+                    {{#if this.quantity}}
+                    <span class="item-qty">x{{this.quantity}}</span>
+                    {{/if}}
+                </div>
+                {{else}}
+                <div class="empty-message">No items in inventory</div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+
+    {{!-- Footer: Action Buttons --}}
+    <div class="shop-footer">
+        <button type="button" class="shop-btn confirm" data-action="confirm" {{#unless canConfirm}}disabled{{/unless}}>
+            Confirm
+        </button>
+        <button type="button" class="shop-btn cancel" data-action="cancel">
+            Cancel
+        </button>
+    </div>
+</div>

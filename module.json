@@ -1,0 +1,35 @@
+{
+  "id": "ironic-shop",
+  "title": "Ironic's Shop",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "Ironic",
+      "discord": "ironic._.",
+      "flags": {}
+    }
+  ],
+  "flags": {
+    "canUpload": true
+  },
+  "relationships": {
+    "requires": [
+      {
+        "id": "ironic-dc-checks",
+        "type": "module",
+        "compatibility": {}
+      }
+    ]
+  },
+  "esmodules": [
+    "scripts/module.js"
+  ],
+  "description": "A shop and trading system for NPC interactions",
+  "url": "https://github.com/Ironictw2st/ironic-shop/",
+  "manifest": "https://github.com/Ironictw2st/ironic-shop/releases/download/Prerelease/module.json",
+  "download": "https://github.com/Ironictw2st/ironic-shop/releases/download/Prerelease/ironic-shop.zip"
+}
